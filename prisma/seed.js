@@ -3,8 +3,6 @@ import {doctors, assistants, patients} from '../data/initial_data.js'
 
 const prisma = new PrismaClient()
 
-
-
  async function main() {
 //   await prisma.doctor.create({
 //     data: doctors[0]
@@ -14,9 +12,9 @@ const prisma = new PrismaClient()
 //     data: assistants[0],
 //   })
 
-  await prisma.patient.create({
-    data: patients[0],
-  })
+  // await prisma.patient.create({
+  //   data: patients[0],
+  // })
 }
 
 main()
@@ -27,4 +25,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect()
   })
-

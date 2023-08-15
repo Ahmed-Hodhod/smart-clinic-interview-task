@@ -9,27 +9,23 @@ datasource db {
 
 // schema.prisma
 
-model Doctor {
-  id       Int       @id @default(autoincrement())
+model User {
+  id       Int    @id @default(autoincrement())
   name     String
-  email    String    @unique
-  password String    @db.VarChar(255)
-  patients Patient[]
+  email    String @unique
+  password String @db.VarChar(255)
+  role     Role
 }
 
-model Assistant {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  password String    @db.VarChar(255)
-  patients Patient[]
+enum Role {
+  ADMIN
+  DOCTOR
+  ASSISTANT
 }
 
 model Patient {
-  id         Int         @id @default(autoincrement())
-  name       String
-  // birthdate  DateTime  
-  doctor     Doctor?     @relation(fields: [doctorId], references: [id])
-  doctorId   Int?
-  assistants Assistant[]
+  id          Int    @id @default(autoincrement())
+  name        String
+  birthdate   String
+  medicalInfo String
 }

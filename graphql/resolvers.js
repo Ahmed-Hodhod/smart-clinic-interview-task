@@ -1,72 +1,49 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
-const prisma = new PrismaClient()
 
 export const resolvers = {
   Query: {
-    doctors: () => doctors,
-    assistants: () => assistants,
-    patients: () => patients,
-    doctor: (parent, args) => doctors.find(doctor => doctor.id === args.id),
-    assistant: (parent, args) => assistants.find(assistant => assistant.id === args.id),
-    patient: (parent, args) => patients.find(patient => patient.id === args.id),
-    
+    patient: getPatient,
+    patients: getPatients,
   },
 
 
   Mutation: {
     signup,
     login,
+    addPatient, 
+    updatePatient, 
+    deletePatient
+
   },
 
 };
 
 
-const doctors = [ 
-{
-  id: 1,
-  name: 'Dr. John Doe',
-  email: 'exaple@gmail.co'
-}
-]; 
-
-async function signup(_, args, contextValue, info) {
-  // 1
+// Once your are signed up, you can login with your email and password.
+async function signup(_, args, context, info) {
   const password = await bcrypt.hash(args.password, 10)
 
-  // 2
-  console.log(contextValue)
+  const user = await context.prisma.user.create({ data: { ...args, password } })
 
-  //const user = await contextValue.prisma.doctor.create({ data: { ...args, password } })
-  const user = await prisma.doctor.create({ data: { ...args, password } })
-
-  // 3
-  const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET )
-
-  // 4
   return {
-    token,
     user,
   }
 }
 
-async function login(parent, args, context, info) {
-  // 1
-  const user = await prisma.doctor.findUnique({ where: { email: args.email } })
+async function login(parent, args, context, info ) {
+ 
+  const user = await context.prisma.user.findUnique({ where: { email: args.email } })
   if (!user) {
     throw new Error('No such user found')
   }
 
-  // 2
   const valid = await bcrypt.compare(args.password, user.password)
   if (!valid) {
     throw new Error('Invalid password')
   }
-
   const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET)
 
-  // 3
   return {
     token,
     user,
@@ -74,20 +51,59 @@ async function login(parent, args, context, info) {
 }
 
 
-
-const assistants = [ 
-  {
-    id: 11,
-    name: 'As. fsaho Doe',
-    email: 'sfhso@gmail.co'
+async function getPatients (parent, args, context) {
+  if  (context.user.role == 'ASSISTANT' || context.user.role == 'DOCTOR') {
+    //console.log()
+    return await context.prisma.patient.findMany()
   }
-  ]; 
+}
 
-  const patients = [ 
-    {
-      id: 15,
-      name: 'Pa. John Doe',
-      email: 'exaple@gmail.co'
-    }
-    ]; 
 
+async function getPatient ( parent, args, context) {
+  console.log(context.user)
+  if  (context.user.role == 'ASSISTANT' || context.user.role == 'DOCTOR') {
+    return await context.prisma.patient.findUnique({ where: { id: args.patientId } })
+  }
+}
+
+
+
+async function addPatient(parent, args, context, info ) {
+  
+  if  (context.user.role == 'DOCTOR') {
+    //console.log()
+    return await context.prisma.patient.create({ data: { ...args } })
+    
+  }
+  else {
+    throw new Error('You don\'t have permission to add a patient')
+  }
+}
+
+
+async function updatePatient(parent, args, context, info ) {
+  
+  if  (context.user.role == 'DOCTOR' || context.user.role == 'ASSISTANT') {
+    //console.log()
+    
+    return await context.prisma.patient.update({ where: { id: args.id }, data: { ...args } })  
+  }
+  else {
+    throw new Error('You don\'t have permission to update a patient')
+  }
+}
+
+
+
+
+async function deletePatient(parent, args, context, info ) {
+  
+  if  (context.user.role == 'DOCTOR' ) {
+    //console.log()
+    
+    return await context.prisma.patient.delete({ where: { id: args.id } })
+  }
+  else {
+    throw new Error('You don\'t have permission to delete a patient')
+  }
+}

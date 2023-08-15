@@ -3,7 +3,12 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 
+//simport  fs from 'fs';
+//import * as path from 'path';
+
 import { PrismaClient } from '@prisma/client'
+import getUserId from './utils.js';
+
 const prisma = new PrismaClient()
 
 // The ApolloServer constructor requires two parameters: your schema
@@ -11,26 +16,45 @@ const prisma = new PrismaClient()
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    return {
-      ...req,
-      prisma,
-      currentUserId: 
-        req && req.headers.authorization
-          ? getUserId(req)
-          : null
-    }
-},
+ introspection: true,
 
 });
 
-
-// Passing an ApolloServer instance to the `startStandaloneServer` function:
-//  1. creates an Express app
-//  2. installs your ApolloServer instance as middleware
-//  3. prepares your app to handle incoming requests
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    
+    
+    if (req.body.operationName === 'IntrospectionQuery') {
+      // console.log('blocking introspection query..');
+      return {};
+    }
+
+    if (
+      req.body.operationName === 'Singup' ||
+      req.body.operationName === 'Login'
+    ) {
+      return {prisma};
+    }
+  
+   // Get the user token from the headers.
+    const token = req.headers.authorization || '';
+
+    //Try to retrieve a user with the token
+    const userId = await getUserId(token);
+
+    if (!userId) {
+      throwCustomError('User is not Authenticated', ErrorTypes.UNAUTHENTICATED);
+    }
+    console.log("userId", userId);
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    return {
+      user, 
+      prisma
+    }
+  },
+
 });
 
 console.log(`🚀  Server ready at: ${url}`);

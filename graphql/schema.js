@@ -1,48 +1,44 @@
 export const typeDefs = `#graphql
 
-type Doctor {
+type User {
   id: Int!
   name: String!
   email: String!
-  patients: [Patient!]!
+  password: String!
+  role: Role!
 }
 
-type Assistant {
-  id: Int!
-  name: String!
-  email: String!
-  patients: [Patient!]!
+enum Role {
+  ADMIN 
+  DOCTOR
+  ASSISTANT
 }
 
 type Patient {
   id: Int!
   name: String!
   birthdate: String!
-  doctor: Doctor
-  assistants: [Assistant!]!
+  medicalInfo: String!
 }
 
   type Query {
-    doctors: [Doctor!]!
-    assistants: [Assistant!]!
-    patients: [Patient!]!
-    doctor(id: Int!): Doctor
-    assistant(id: Int!): Assistant
-    patient(id: Int!): Patient
 
+    # All users 
+    patients: [Patient!]!
+    patient(id: Int!): Patient
   }
 
   type AuthPayload {
     token: String
-    user: Doctor
+    user: User
   }
   
   type Mutation {
-    signup(email: String!, password: String!, name: String!): AuthPayload
+    signup(email: String!, password: String!, name: String!, role: Role!): AuthPayload
     login(email: String!, password: String!): AuthPayload
+    addPatient(name: String!, birthdate: String!, medicalInfo: String!): Patient
+    updatePatient(id: Int!, name: String, birthdate: String, medicalInfo: String): Patient
+    deletePatient(id: Int!): Patient
   }
-  
-
-  
 `;
 
