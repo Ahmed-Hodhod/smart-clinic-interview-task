@@ -1,7 +1,10 @@
 // graphql/schema.ts
+
 // import { builder } from "./builder";
+
 // export const schema = builder.toSchema()
-export const typeDefs = `#graphql
+
+export const  typeDefs = `#graphql
 
 type User {
   id: Int!
@@ -44,3 +47,4 @@ type Patient {
     deletePatient(id: Int!): Patient
   }
 `;
+

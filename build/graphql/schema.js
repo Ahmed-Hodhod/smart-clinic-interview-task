@@ -1,7 +1,7 @@
-// graphql/schema.ts
-// import { builder } from "./builder";
-// export const schema = builder.toSchema()
-export const typeDefs = `#graphql
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.typeDefs = void 0;
+exports.typeDefs = `#graphql
 
 type User {
   id: Int!

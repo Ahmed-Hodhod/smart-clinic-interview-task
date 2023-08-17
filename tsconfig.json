@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": false,
+        
+
+    },
+    "extends": ["@tsconfig/node-lts/tsconfig.json"]
+
+
+}
+

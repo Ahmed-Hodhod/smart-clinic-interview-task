@@ -1,6 +1,10 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-export const resolvers = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolvers = void 0;
+const tslib_1 = require("tslib");
+const bcryptjs_1 = tslib_1.__importDefault(require("bcryptjs"));
+const jsonwebtoken_1 = tslib_1.__importDefault(require("jsonwebtoken"));
+exports.resolvers = {
     Query: {
         patient: getPatient,
         patients: getPatients,
@@ -13,9 +17,8 @@ export const resolvers = {
         deletePatient
     },
 };
-// Once your are signed up, you can login with your email and password.
 async function signup(_, args, context, info) {
-    const password = await bcrypt.hash(args.password, 10);
+    const password = await bcryptjs_1.default.hash(args.password, 10);
     const user = await context.prisma.user.create({ data: { ...args, password } });
     return {
         user,
@@ -26,11 +29,11 @@ async function login(parent, args, context, info) {
     if (!user) {
         throw new Error('No such user found');
     }
-    const valid = await bcrypt.compare(args.password, user.password);
+    const valid = await bcryptjs_1.default.compare(args.password, user.password);
     if (!valid) {
         throw new Error('Invalid password');
     }
-    const token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    const token = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.APP_SECRET);
     return {
         token,
         user,
@@ -38,7 +41,6 @@ async function login(parent, args, context, info) {
 }
 async function getPatients(parent, args, context) {
     if (context.user.role == 'ASSISTANT' || context.user.role == 'DOCTOR') {
-        //console.log()
         return await context.prisma.patient.findMany();
     }
 }
@@ -55,7 +57,6 @@ async function addPatient(parent, args, context, info) {
     }
     const { role } = await context.prisma.user.findUnique({ where: { id: userId } });
     if (role == 'DOCTOR') {
-        //console.log()
         return await context.prisma.patient.create({ data: { ...args } });
     }
     else {
@@ -69,7 +70,6 @@ async function updatePatient(parent, args, context, info) {
     }
     const { role } = await context.prisma.user.findUnique({ where: { id: userId } });
     if (role == 'DOCTOR' || role == 'ASSISTANT') {
-        //console.log()
         return await context.prisma.patient.update({ where: { id: args.id }, data: { ...args } });
     }
     else {
@@ -83,7 +83,6 @@ async function deletePatient(parent, args, context, info) {
     }
     const { role } = await context.prisma.user.findUnique({ where: { id: userId } });
     if (role == 'DOCTOR') {
-        //console.log()
         return await context.prisma.patient.delete({ where: { id: args.id } });
     }
     else {

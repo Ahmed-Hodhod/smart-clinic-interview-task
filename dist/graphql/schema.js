@@ -44,3 +44,4 @@ type Patient {
     deletePatient(id: Int!): Patient
   }
 `;
+//# sourceMappingURL=schema.js.map
