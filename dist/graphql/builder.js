@@ -2,7 +2,7 @@ import SchemaBuilder from '@pothos/core';
 import { PrismaClient } from '@prisma/client';
 import PrismaPlugin from '@pothos/plugin-prisma';
 const prisma = new PrismaClient({});
-const builder = new SchemaBuilder({
+export const builder = new SchemaBuilder({
     plugins: [PrismaPlugin],
     prisma: {
         client: prisma,
@@ -11,4 +11,10 @@ const builder = new SchemaBuilder({
         onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn',
     },
 });
-//# sourceMappingURL=builder.js.map
+builder.queryType({
+    fields: (t) => ({
+        ok: t.boolean({
+            resolve: () => true,
+        }),
+    }),
+});

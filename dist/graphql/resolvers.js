@@ -90,4 +90,3 @@ async function deletePatient(parent, args, context, info) {
         throw new Error('You don\'t have permission to delete a patient');
     }
 }
-//# sourceMappingURL=resolvers.js.map

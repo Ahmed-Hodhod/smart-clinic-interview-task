@@ -9,4 +9,3 @@ export default function getUserId(authToken) {
     }
     return null;
 }
-//# sourceMappingURL=utils.js.map

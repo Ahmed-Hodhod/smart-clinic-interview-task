@@ -6,7 +6,7 @@ import type PrismaTypes from '../prisma/pothos-types.js';
 
 const prisma = new PrismaClient({});
 
-const builder = new SchemaBuilder<{
+export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes;
 }>({
   plugins: [PrismaPlugin],
@@ -18,3 +18,12 @@ const builder = new SchemaBuilder<{
   },
 });
 
+
+
+builder.queryType({
+  fields: (t) => ({
+    ok: t.boolean({
+      resolve: () => true,
+    }),
+  }),
+});

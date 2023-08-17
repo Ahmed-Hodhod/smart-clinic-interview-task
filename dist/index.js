@@ -3,17 +3,18 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 //import {schema} from './graphql/schema';
 //simport  fs from 'fs';
 //import * as path from 'path';
-import { typeDefs } from "./graphql/schema.js";
-import { resolvers } from './graphql/resolvers.js';
+//import {typeDefs} from "./graphql/schema.js";
+//import  {resolvers} from './graphql/resolvers.js';
+import { schema } from './graphql/schema.js';
 import { PrismaClient } from '@prisma/client';
 import getUserId from './utils.js';
 const prisma = new PrismaClient();
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
 const server = new ApolloServer({
-    //schema,
-    typeDefs,
-    resolvers,
+    schema,
+    // typeDefs, 
+    // resolvers,
     introspection: true,
 });
 const { url } = await startStandaloneServer(server, {
@@ -35,4 +36,3 @@ const { url } = await startStandaloneServer(server, {
     },
 });
 console.log(`🚀  Server ready at: ${url}`);
-//# sourceMappingURL=index.js.map

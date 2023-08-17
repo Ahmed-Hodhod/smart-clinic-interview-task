@@ -2,7 +2,7 @@ import SchemaBuilder from '@pothos/core';
 import { PrismaClient } from '@prisma/client';
 import PrismaPlugin from '@pothos/plugin-prisma';
 const prisma = new PrismaClient({});
-const builder = new SchemaBuilder({
+export const builder = new SchemaBuilder({
     plugins: [PrismaPlugin],
     prisma: {
         client: prisma,
